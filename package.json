@@ -11,7 +11,7 @@
     "test": "jest",
     "cover": "jest --coverage",
     "dist": "npm run build",
-    "show": "live-server dist"
+    "serve": "live-server dist"
   },
   "repository": {
     "type": "git",

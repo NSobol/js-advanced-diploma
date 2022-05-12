@@ -1,8 +1,8 @@
 import Character from '../Character';
 /* скелет */
 
-export default class Swordman extends Character {
-  constructor(level, type = 'Swordman') {
+export default class Undead extends Character {
+  constructor(level, type = 'Undead') {
     super(level, type);
     this.attack = 40;
     this.defence = 10;

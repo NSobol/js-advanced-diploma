@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+		"jest": true
     },
     "extends": [
         "airbnb-base"
@@ -12,9 +13,16 @@
     },
     "rules": {
 		"no-restricted-syntax": [
-            "error",
-            "LabeledStatement",
-            "WithStatement"
-        ]
-    }
+		"error",
+		"LabeledStatement",
+		"WithStatement"
+	  ],
+	  "no-unused-vars": "warn",
+	  "no-multiple-empty-lines": "warn",
+	  "eol-last": [
+		"error",
+		"never"
+	  ]
+    },
+	"parser": "@babel/eslint-parser"
 }
