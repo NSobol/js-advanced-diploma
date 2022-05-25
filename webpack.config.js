@@ -1,3 +1,5 @@
+const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -12,7 +14,8 @@ module.exports = {
     scripts: './src/index.js',
   },
   output: {
-    filename: '[name].[contenthash].js',
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'dist'),
     assetModuleFilename: 'assets',
     clean: true,
   },
@@ -28,17 +31,9 @@ module.exports = {
         loader: 'raw-loader',
       },
       {
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader',
-          },
-        ],
-      },
-      {
         test: /\.css$/,
         use: [
-          (mode === 'development') ? 'style-loader' : MiniCssExtractPlugin.loader,
+          MiniCssExtractPlugin.loader,
           'css-loader',
         ],
       },
@@ -51,9 +46,11 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html',
+      filename: './index.html',
     }),
     new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
+      filename: '[name].css',
+      chunkFilename: '[id].css',
     }),
   ],
 };

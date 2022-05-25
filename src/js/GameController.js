@@ -26,6 +26,18 @@ export default class GameController {
     // TODO: add event listeners to gamePlay events
     // TODO: load saved stated from stateService
     this.gamePlay.drawUi(themes[this.gameState.level]);
+    this.userTeam.addAll(generateTeam([Bowman, Swordman], 1, 2));
+    this.botTeam.addAll(generateTeam(this.botCharacters, 1, 2));
+    this.addsTheTeamToPosition(this.userTeam, this.getUserStartPositions());
+    this.addsTheTeamToPosition(this.botTeam, this.getBotStartPositions());
+    this.gamePlay.redrawPositions(this.gameState.allPositions);
+    this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
+    this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
+    this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
+    this.gamePlay.addNewGameListener(this.onNewGameClick.bind(this));
+    this.gamePlay.addSaveGameListener(this.onSaveGameClick.bind(this));
+    this.gamePlay.addLoadGameListener(this.onLoadGameClick.bind(this));
+    GamePlay.showMessage(`Уровень ${this.gameState.level}`);
   }
 
   onCellClick(index) {
