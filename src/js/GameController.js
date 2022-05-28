@@ -17,8 +17,8 @@ export default class GameController {
     this.stateService = stateService;
     this.gameState = new GameState();
     this.userTeam = new Team();
-    this.compTeam = new Team();
-    this.compCharacters = [Daemon, Undead, Vampire];
+    this.botTeam = new Team();
+    this.botCharacters = [Daemon, Undead, Vampire];
     this.userCharacters = [Bowman, Swordman, Magician];
   }
 
@@ -42,10 +42,80 @@ export default class GameController {
 
   onCellClick(index) {
     // TODO: react to click
+    if (this.gameState.level === 5 || this.userTeam.members.size === 0) {
+      return;
+    }
+
+    // Реализация атаки
+    if (this.gameState.selected !== null && this.getChar(index) && this.isBotChar(index)) {
+      if (this.isAttack(index)) {
+        this.getAttack(index, this.gameState.selected);
+      }
+    }
+
+    // перемещение персонажа игрока
+    if (this.gameState.selected !== null && this.isMoving(index) && !this.getChar(index)) {
+      if (this.gameState.isUsersTurn) {
+        this.getUsersTurn(index);
+      }
+    }
+
+    // Если не валидный ход, то показываем сообщение об ошибке
+    if (this.gameState.selected !== null && !this.isMoving(index) && !this.isAttack(index)) {
+      if (this.gameState.isUsersTurn && !this.getChar(index)) {
+        GamePlay.showError('Недопустимый ход');
+      }
+    }
+
+    // Если ячейка пустая то при клике на неё return
+    if (!this.getChar(index)) {
+      return;
+    }
+
+    // Если клик на бота, то показываем сообщение об ошибке
+    if (this.getChar(index) && this.isBotChar(index) && !this.isAttack(index)) {
+      GamePlay.showError('Это не ваш персонаж');
+    }
+
+    // Если клик на персонажа игрока, то выделяем клетку желтым
+    if (this.getChar(index) && this.isUserChar(index)) {
+      this.gamePlay.cells.forEach((elem) => elem.classList.remove('selected-green'));
+      this.gamePlay.cells.forEach((elem) => elem.classList.remove('selected-yellow'));
+      this.gamePlay.selectCell(index);
+      this.gameState.selected = index;
+    }
   }
 
   onCellEnter(index) {
     // TODO: react to mouse enter
+    // Если в ячейке персонаж игрока, то при наведении на ячейку курсор = pointer
+    if (this.getChar(index) && this.isUserChar(index)) {
+      this.gamePlay.setCursor(cursors.pointer);
+    }
+    // Если валидный диапазон перемещения, то при наведении выделяем ячейку зелёным
+    if (this.gameState.selected !== null && !this.getChar(index) && this.isMoving(index)) {
+      this.gamePlay.setCursor(cursors.pointer);
+      this.gamePlay.selectCell(index, 'green');
+    }
+    // При наведении на персонажа показываем инфо
+    if (this.getChar(index)) {
+      const char = this.getChar(index).character;
+      const message = `\u{1F396}${char.level}\u{2694}${char.attack}\u{1F6E1}${char.defence}\u{2764}${char.health}`;
+      this.gamePlay.showCellTooltip(message, index);
+    }
+    // Если валидный диапазон атаки, то при наведении выделяем ячейку красным
+    if (this.gameState.selected !== null && this.getChar(index) && !this.isUserChar(index)) {
+      if (this.isAttack(index)) {
+        this.gamePlay.setCursor(cursors.crosshair);
+        this.gamePlay.selectCell(index, 'red');
+      }
+    }
+    // Если не валидные диапазоны атаки и перемещения и бот, то при наведении курсор = notallowed
+    if (this.gameState.selected !== null && !this.isAttack(index) && !this.isMoving(index)) {
+      if (!this.isUserChar(index)) {
+        this.gamePlay.setCursor(cursors.notallowed);
+      }
+    }
   }
 
   onCellLeave(index) {

@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -10,13 +9,11 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   mode,
-  entry: {
-    scripts: './src/index.js',
-  },
+  entry: './src/index.js',
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    assetModuleFilename: 'assets',
+    assetModuleFilename: 'assets/images/[name]-[hash][ext]',
     clean: true,
   },
   module: {
@@ -31,6 +28,12 @@ module.exports = {
         loader: 'raw-loader',
       },
       {
+        test: /\.html$/,
+        use: [{
+          loader: 'html-loader',
+        }],
+      },
+      {
         test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
@@ -38,7 +41,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
       },
     ],
@@ -50,7 +53,6 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
-      chunkFilename: '[id].css',
     }),
   ],
 };
